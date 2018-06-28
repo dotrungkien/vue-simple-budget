@@ -2,7 +2,8 @@ import * as actions from './actions'
 import mutations from './mutations'
 
 const state = {
-  something: {}
+  something: {},
+  accounts: {}
 }
 
 export default {
