@@ -65,7 +65,7 @@ export default {
     ]),
     resetAndGo () {
       this.selectedAccount = {}
-      this.$router.push({ name: 'accountsListView' })
+      this.$router.push({ name: 'accountsList' })
     },
     saveNewAccount () {
       this.addAccount(this.selectedAccount).then(() => {

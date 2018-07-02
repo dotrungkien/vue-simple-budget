@@ -3,10 +3,10 @@
     I'm a list of budgets!
 
     <router-link :to="{ name: 'createBudget' }">Add a budget</router-link>
-    <router-link :to="{ name: 'accountsListView' }">View accounts</router-link>
+    <router-link :to="{ name: 'accountsList' }">View accounts</router-link>
 
     <ul>
-      <li v-for="(budget, key) in budgets" :key=key>
+      <li v-for="(budget, key) in sortedBudgets" :key=key>
         {{ budget.month | moment }}
         ${{ budget.budgeted }}
         ${{ budget.spent }}
@@ -37,7 +37,15 @@ export default {
   computed: {
     ...mapState({
       'budgets': state => state.budgets.budgets
-    })
+    }),
+    sortedBudgets () {
+      let sortedKeys = Object.keys(this.budgets).sort((a, b) => {
+        return this.budgets[b].month - this.budgets[a].month
+      })
+      return sortedKeys.map((key) => {
+        return this.budgets[key]
+      })
+    }
   }
 }
 </script>

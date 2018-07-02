@@ -14,6 +14,6 @@ export default [
   {
     path: '/budgets/:budgetId/update',
     component: components.CreateUpdateBudget,
-    name: 'udpateBudget'
+    name: 'updateBudget'
   }
 ]

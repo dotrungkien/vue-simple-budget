@@ -60,15 +60,20 @@ export default {
     ]),
     resetAndGo () {
       this.selectedBudget = {}
+      this.$router.push({ name: 'budgetsList' })
     },
     saveNewBudget () {
       this.createBudget(this.selectedBudget).then(() => {
         this.resetAndGo()
+      }).catch((err) => {
+        alert(err)
       })
     },
     saveBudget () {
       this.updateBudget(this.selectedBudget).then(() => {
         this.resetAndGo()
+      }).catch((err) => {
+        alert(err)
       })
     },
     processSave () {
