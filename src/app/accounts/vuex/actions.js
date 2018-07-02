@@ -23,9 +23,7 @@ export const deleteAccount = ({ commit }, data) => {
 export const loadAccounts = (state) => {
   if (!state.accounts || Object.keys(state.accounts).length === 0) {
     return fetchAccount().then((res) => {
-      let accounts = {}
-      Object.keys(res).forEach((key) => { accounts[res[key].id] = res[key] })
-      state.commit('LOAD_ACCOUNTS', accounts)
+      state.commit('LOAD_ACCOUNTS', res)
     })
   }
 }
