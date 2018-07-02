@@ -8,12 +8,12 @@ export default [
   },
   {
     path: '/accounts/create',
-    component: components.CreateEditAccount,
+    component: components.CreateUpdateAccount,
     name: 'createAccount'
   },
   {
     path: '/accounts/:accountId/edit',
-    component: components.CreateEditAccount,
+    component: components.CreateUpdateAccount,
     name: 'editAccount'
   }
 ]
