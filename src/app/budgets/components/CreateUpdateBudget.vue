@@ -7,12 +7,14 @@
     <form class="form" @submit.prevent="processSave">
       <label for="month" class="label">Month</label>
       <p class="control">
-        <!-- <input type="text" class="input" name="month" v-model="selectedBudget.month"> -->
         <datepicker name="month" input-class="input" format="MMMM yyyy" v-model="selectedBudget.month"></datepicker>
       </p>
       <label for="budgeted" class="label">Budgeted amount</label>
       <p class="control">
         <input type="text" class="input" name="budgeted" v-model="selectedBudget.budgeted">
+      </p>
+      <p class="control">
+        Budgeted: {{ selectedBudget.budget }}
       </p>
       <p class="control">
         Spent: {{ selectedBudget.spent }}
@@ -29,12 +31,42 @@
         </p>
       </div>
     </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>Budgeted</th>
+          <th>Spent</th>
+          <th>Remaining</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="bc in selectedBudget.budgetCategories" :key="bc.id">
+          <td>{{ getCategoryById(bc.category).name }}</td>
+          <td>${{ bc.budgeted }}</td>
+          <td>${{ bc.spent }}</td>
+          <td>${{ bc.budgeted - bc.spent }}</td>
+        </tr>
+      </tbody>
+      <tfoot>
+        <tr>
+          <td></td>
+          <td>${{ selectedBudget.budgeted }}</td>
+          <td>${{ selectedBudget.spent }}</td>
+          <td>${{ selectedBudget.budgeted - selectedBudget.spent }}</td>
+        </tr>
+      </tfoot>
+    </table>
+    <CreateUpdateBudgetCategory @add-budget-category="addBudgetCategory"></CreateUpdateBudgetCategory>
   </div>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import Datepicker from 'vuejs-datepicker'
+
+import CreateUpdateBudgetCategory from './CreateUpdateBudgetCategory'
+
 export default {
   name: 'budget-create-edit-view',
   data: () => {
@@ -56,7 +88,8 @@ export default {
     ...mapActions([
       'createBudget',
       'updateBudget',
-      'loadBudgets'
+      'loadBudgets',
+      'createBudgetCategory'
     ]),
     resetAndGo () {
       this.selectedBudget = {}
@@ -78,15 +111,31 @@ export default {
     },
     processSave () {
       this.$route.params.budgetId ? this.saveBudget() : this.saveNewBudget()
+    },
+    addBudgetCategory (budgetCategory) {
+      if (!budgetCategory.category) return
+
+      this.createBudgetCategory({
+        budget: this.selectedBudget,
+        budgetCategory: {
+          category: budgetCategory.category.id,
+          budgeted: budgetCategory.budgeted,
+          spent: 0
+        }
+      }).then(() => {
+        this.selectedBudget = this.getBudgetById(this.$route.params.budget)
+      })
     }
   },
   computed: {
     ...mapGetters([
-      'getBudgetById'
+      'getBudgetById',
+      'getCategoryById'
     ])
   },
   components: {
-    Datepicker
+    Datepicker,
+    CreateUpdateBudgetCategory
   }
 }
 </script>
