@@ -12,8 +12,9 @@ export default [
     name: 'createAccount'
   },
   {
-    path: '/accounts/:accountId/edit',
+    path: '/accounts/:accountId/update',
     component: components.CreateUpdateAccount,
-    name: 'editAccount'
+    name: 'updateAccount',
+    props: true
   }
 ]

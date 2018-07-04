@@ -1,34 +1,53 @@
 <template>
   <div id="accounts-create-edit-view">
-    You can create and edit accounts with me, yippee!
-    <router-link :to="{ name:'accountsListView' }">View all accounts</router-link>
-    <form class="form" @submit.prevent="processSave">
-      <label for="name" class="label">Name</label>
-      <p class="control">
-         <input type="text" class="input" name="name" v-model="selectedAccount.name">
-      </p>
-      <label for="name" class="label">Category</label>
-      <p class="control">
-        <span class="select">
-          <select name="category" v-model="selectedAccount.category">
-             <option v-for="(value, key) in categories" :key="key" :value="key">{{ value }}</option>
-          </select>
-        </span>
-      </p>
-      <label for="balance" class="label">Balance</label>
-      <p class="control">
-        <input type="text" class="input" name="balance" v-model="selectedAccount.balance" v-if="!editing">
-        <span v-else>To update your balance, add a balance adjusting transaction.</span>
-      </p>
-      <div class="control is-grouped">
-        <p class="control">
-          <button class="button is-primary">Submit</button>
-        </p>
-        <p class="control">
-          <router-link :to="{ name: 'accountsListView' }"><button class="button is-link">Cancel></button></router-link>
-        </p>
+    <nav class="level">
+      <div class="level-left">
+        <h1 class="title is-2">Add Account</h1>
       </div>
-    </form>
+      <div class="level-right">
+        <div class="level-item">
+          <router-link :to="{ name: 'accountsList' }" class="button">View all accounts &#8630;</router-link>
+        </div>
+      </div>
+    </nav>
+
+    <div class="columns">
+      <div class="column is-6">
+        <form class="form" @submit.prevent="processSave">
+          <label for="name" class="label">Name</label>
+          <p class="control">
+            <input type="text" class="input" name="name" v-model="selectedAccount.name">
+          </p>
+          <label for="category" class="label">Category</label>
+          <p class="control">
+            <span class="select">
+              <select name="category" v-model="selectedAccount.category">
+                <option v-for="(value, key) in categories" :value="key" :key="key">{{ value }}</option>
+              </select>
+            </span>
+          </p>
+          <label for="balance" class="label">Balance</label>
+          <p class="control has-icon" v-if="!editing">
+            <input type="number" class="input" name="balance" step="0.01" v-model="selectedAccount.balance">
+            <span class="help">Use negative values for accounts that carry a negative balance, e.g. credit cards</span>
+            <span class="icon">
+              <i class="fa fa-usd" aria-hidden="true"></i>
+            </span>
+          </p>
+          <p v-else>
+            <span>To update your balance, add a balance adjusting transaction.</span>
+          </p>
+          <div class="control is-grouped">
+            <p class="control">
+              <button class="button is-success">Submit</button>
+            </p>
+            <p class="control">
+              <router-link :to="{ name: 'accountsList' }"><button class="button is-link">Cancel</button></router-link>
+            </p>
+          </div>
+        </form>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -38,6 +57,7 @@ import { CATEGORIES } from '../../../consts'
 
 export default {
   name: 'accounts-create-edit-view',
+  props: ['accountId'],
   data: () => {
     return {
       categories: CATEGORIES,
@@ -46,15 +66,8 @@ export default {
     }
   },
   mounted () {
-    if ('accountId' in this.$route.params) {
-      this.loadAccounts().then(() => {
-        let selectedAccount = this.getAccountById(this.$route.params.accountId)
-        if (selectedAccount) {
-          this.editing = true
-          this.selectedAccount = Object.assign({}, selectedAccount)
-        }
-      })
-    // TODO: the object does not exist, how do we handle this scenario?
+    if (this.accountId) {
+      this.loadAccount()
     }
   },
   methods: {
@@ -79,10 +92,32 @@ export default {
     },
     processSave () {
       this.editing ? this.saveAccount() : this.saveNewAccount()
+    },
+    loadAccount () {
+      let vm = this
+      this.loadAccounts().then(() => {
+        let selectedAccount = vm.getAccountById(vm.accountId)
+        if (selectedAccount) {
+          vm.editing = true
+          vm.selectedAccount = Object.assign({}, selectedAccount)
+        }
+        // TODO: the object does not exist, how do we handle this scenario?
+      })
     }
   },
   computed: {
-    ...mapGetters(['getAccountById'])
+    ...mapGetters([
+      'getAccountById'
+    ])
+  },
+  watch: {
+    accountId (newId) {
+      if (newId) {
+        this.loadAccount()
+      }
+      this.editing = false
+      this.selectedAccount = {}
+    }
   }
 }
 </script>
