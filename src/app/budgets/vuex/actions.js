@@ -1,5 +1,5 @@
 import moment from 'moment'
-import { saveBudget, fetchBudgets, saveCategory, fetchCategories } from '../api'
+import { saveBudget, fetchBudgets, removeBudget, saveCategory, fetchCategories } from '../api'
 import { guid } from '../../../utils'
 
 const verifyUniqueMonth = (budgets, budget) => {
@@ -32,6 +32,11 @@ export const loadBudgets = (state) => {
       state.commit('LOAD_BUDGETS', res)
     })
   }
+}
+
+export const deleteBudget = ({ commit }, data) => {
+  commit('DELETE_BUDGET', { budget: data })
+  removeBudget(data)
 }
 
 export const createCategory = ({ commit, state }, data) => {
@@ -69,4 +74,45 @@ export const createBudgetCategory = ({ commit, dispatch, getters }, data) => {
     param: 'budgeted',
     value: budgetCategory.budgeted
   })
+}
+
+export const updateBudgetCategory = ({ commit, dispatch, getters }, data) => {
+  let newBudget = data.budgetCategory.budgeted
+  let oldBudget = getters.getBudgetCategoryById(data.budget.id, data.budgetCategory.id).budgeted
+  if (newBudget !== oldBudget) {
+    dispatch('updateBudgetBalance', {
+      budget: data.budget,
+      param: 'budgeted',
+      value: newBudget - oldBudget
+    })
+  }
+  commit('UPDATE_BUDGET_CATEGORY', data)
+
+  saveBudget(getters.getBudgetById(data.budget.id))
+}
+
+export const duplicateBudget = ({ commit, dispatch, getters, state }, data) => {
+  if (!(data.buget && data.baseBudget)) return Promise.reject(new Error('Incorrect data sent to duplicateBudget'))
+  let budget = Object.assign({}, data.budget)
+
+  budget.budgeted = 0
+  budget.budgetCategories = null
+
+  commit('UPDATE_BUDGET', { budget: budget })
+
+  budget = getters.getBudgetById(budget.id)
+  if ('budgetCategories' in data.baseBudget) {
+    Object.keys(data.baseBudget.budgetCategories).forEach((key) => {
+      dispatch('createBudgetCategory', {
+        budget: budget,
+        budgetCategory: {
+          category: data.baseBudget.budgetCategories[key].category,
+          budgeted: data.baseBudget.budgetCategories[key].budgeted,
+          spent: 0
+        }
+      })
+    })
+  }
+  saveBudget(budget)
+  return budget
 }

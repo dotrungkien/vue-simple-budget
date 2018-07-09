@@ -16,11 +16,17 @@ export default {
   LOAD_BUDGETS (state, payload) {
     state.budgets = payload
   },
+  DELETE_BUDGET (state, payload) {
+    Vue.delete(state.budgets, payload.budget.id)
+  },
   CREATE_EMPTY_BUDGET_CATEGORY_OBJECT (state, payload) {
     Vue.set(state.budgets[payload.id], 'budgetCategories', {})
   },
   CREATE_BUDGET_CATEGORY (state, payload) {
     Vue.set(state.budgets[payload.budget.id].budgetCategoies, payload.budgetCategory.id, payload.budgetCategory)
+  },
+  UPDATE_BUDGET_CATEGORY (state, payload) {
+    state.budgets[payload.budget.id].budgetCategoies[payload.budgetCategory.id] = payload.budgetCategory
   },
   CREATE_CATEGORY (state, payload) {
     Vue.set(state.categories, payload.category.id, payload.cateogry)

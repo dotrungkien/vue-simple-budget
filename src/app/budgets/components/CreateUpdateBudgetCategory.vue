@@ -27,7 +27,9 @@
       </td>
 
       <td>
-        <a class="button is-primary" @click.prevent="processSave">Add</a>
+        <a class="button is-primary" @click.prevent="processSave">
+          {{ editing ? 'Save' : 'Add' }}
+        </a>
       </td>
   </tr>
 </template>
@@ -42,21 +44,33 @@ export default {
   components: {
     Multiselect
   },
+  props: ['value'],
   data: () => {
     return {
-      budgetCategory: {}
+      budgetCategory: {},
+      editing: false
     }
   },
   mounted () {
-
+    this.loadCategories()
+    if (this.value) {
+      this.budgetCategory = Object.assign({}, this.value)
+      this.budgetCategory.category = this.getCategoryById(this.budgetCategory.category)
+      this.editing = true
+    }
   },
   methods: {
     ...mapActions([
-
+      'createCategory',
+      'loadCategories'
     ]),
     processSave () {
-      this.$emit('add-budget-category', this.budgetCategory)
-      this.budgetCategory = {}
+      if (this.editing) {
+        this.$emit('update-budget-category', this.budgetCategory)
+      } else {
+        this.$emit('add-budget-category', this.budgetCategory)
+        this.budgetCategory = {}
+      }
     },
     handleCreateCategory (category) {
       let newCategory = { name: category }
@@ -70,7 +84,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'getCategorySelectList'
+      'getCategorySelectList',
+      'getCategoryById'
     ])
   }
 }

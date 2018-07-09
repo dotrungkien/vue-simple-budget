@@ -15,5 +15,10 @@ export default [
     path: '/budgets/:budgetId/update',
     component: components.CreateUpdateBudget,
     name: 'updateBudget'
+  },
+  {
+    path: '/budgets/:budgetId/delete',
+    component: components.CreateUpdateBudget,
+    name: 'updateBudget'
   }
 ]

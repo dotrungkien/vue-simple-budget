@@ -26,6 +26,18 @@ export const fetchBudgets = () => {
   })
 }
 
+export const removeBudget = (budget) => {
+  return localforage
+    .removeItem(BUDGET_NAMESPACE + budget.id)
+    .then(() => {
+      return true
+    })
+    .catch((err) => {
+      console.log(err)
+      return false
+    })
+}
+
 export const saveCategory = (category) => {
   return localforage.setItem(CATEGORY_NAMESPACE + category.id, category)
     .then((value) => {

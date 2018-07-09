@@ -60,13 +60,16 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="bc in selectedBudget.budgetCategories" :key="bc.id">
-            <td><span class="subtitle is-5">{{ getCategoryById(bc.category).name }}</span></td>
-            <td><span class="subtitle is-5">${{ bc.budgeted }}</span></td>
-            <td><span class="subtitle is-5">${{ bc.spent }}</span></td>
-            <td><span class="subtitle is-5">${{ bc.budgeted - bc.spent }}</span></td>
-          </tr>
-          <CreateUpdateBudgetCategory v-on:add-budget-category="addBudgetCategory"></CreateUpdateBudgetCategory>
+          <template v-for="item in selectedBudget.budgetCategories">
+            <component
+              :is="budgetCategoryComponent(item.value)"
+              :key="item.key"
+              v-model="item.value"
+              v-on:update-budget-category="saveBudgetCategory"
+              v-on:edit-budget-category="activeBudgetCategory=item.value"
+            ></component>
+          </template>
+          <CreateUpdateBudgetCategory @add-budget-category="addBudgetCategory"></CreateUpdateBudgetCategory>
         </tbody>
         <tfoot>
           <tr>
@@ -76,6 +79,22 @@
             <td>${{ selectedBudget.budgeted - selectedBudget.spent }}</td>
           </tr>
         </tfoot>
+        <tr>
+          <td>
+            Copy entire budget from:
+            <select
+              class="select"
+              @change="processDuplicateBudget($event.target.value)"
+            ></select>
+            <option
+            v-for="(value, key) in budgets"
+            :value="key"
+            :key="key">
+              {{ value.month || moment}}
+            </option>
+          </td>
+          <td>${{ selected.budgeted }}</td>
+        </tr>
       </table>
 
     </div>
@@ -84,18 +103,38 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from 'vuex'
+import { mapState, mapActions, mapGetters } from 'vuex'
 import Datepicker from 'vuejs-datepicker'
-
 import CreateUpdateBudgetCategory from './CreateUpdateBudgetCategory'
+import BudgetCategory from './BudgetCategory'
+import { moment } from '../../../filters'
 
 export default {
   name: 'budget-create-edit-view',
+  components: {
+    Datepicker,
+    CreateUpdateBudgetCategory,
+    BudgetCategory
+  },
   data: () => {
     return {
       selectedBudget: {},
-      editing: false
+      editing: false,
+      activeBudgetCategory: null,
+      lastBudget: null
     }
+  },
+  computed: {
+    ...mapGetters([
+      'getBudgetById',
+      'getCategoryById'
+    ]),
+    ...mapState({
+      'budgets': state => state.budgets.budgets
+    })
+  },
+  filters: {
+    moment
   },
   mounted () {
     if ('budgetId' in this.$route.params) {
@@ -113,7 +152,9 @@ export default {
       'createBudget',
       'updateBudget',
       'loadBudgets',
-      'createBudgetCategory'
+      'createBudgetCategory',
+      'updateBudgetCategory',
+      'duplicateBudget'
     ]),
     resetAndGo () {
       this.selectedBudget = {}
@@ -149,17 +190,26 @@ export default {
       }).then(() => {
         this.selectedBudget = this.getBudgetById(this.$route.params.budget)
       })
+    },
+    saveBudgetCategory (budgetCategory) {
+      budgetCategory.category = budgetCategory.category.id
+      this.updateBudgetCategory({
+        budget: this.selectedBudget,
+        budgetCategory: budgetCategory
+      }).then(() => {
+        this.selectedBudget = Object.assign({}, this.getBudgetById(this.$route.params.budgetId))
+      })
+    },
+    budgetCategoryComponent (budgetCategory) {
+      return this.activeBudgetCategory && this.activeBudgetCategory === budgetCategory ? 'create-update-budget-category' : 'budget-category'
+    },
+    processDuplicateBudget (budgetId) {
+      if (confirm('Are you sure you want to duplicate that budget? Doing this will overwrite all existing data for this month (transaction data will NOT be erased).')) {
+        this.duplicateBudget({budget: this.selectedBudget, baseBudget: this.getBudgetById(budgetId)}).then((budget) => {
+          this.selectedBudget = budget
+        })
+      }
     }
-  },
-  computed: {
-    ...mapGetters([
-      'getBudgetById',
-      'getCategoryById'
-    ])
-  },
-  components: {
-    Datepicker,
-    CreateUpdateBudgetCategory
   }
 }
 </script>

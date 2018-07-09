@@ -37,6 +37,7 @@
           <td><span class="subtitle is-5">${{ budget.budgeted - budget.spent}}</span></td>
           <td>
             <router-link class="button is-primary" :to="{ name: 'updateBudget', params: { budgetId: budget.id } }">Edit</router-link>
+            <a class="button is-danger" @click="confirmDeleteBudget(budget)">Delete</a>
           </td>
         </tr>
       </tbody>
@@ -59,8 +60,14 @@ export default {
   },
   methods: {
     ...mapActions([
-      'loadBudgets'
-    ])
+      'loadBudgets',
+      'deleteBudget'
+    ]),
+    confirmDeleteBudget (budget) {
+      if (confirm(`Are you sure you want to delete ${budget.month}?`)) {
+        this.deleteBudget(budget)
+      }
+    }
   },
   computed: {
     ...mapState({
@@ -80,6 +87,5 @@ export default {
 
 <style scoped lang='scss'>
   #budgets-list-view {
-
   }
 </style>
