@@ -1,4 +1,4 @@
-import Vue from 'Vue'
+import Vue from 'vue'
 
 const forceFloat = (o) => {
   o.amount = parseFloat(o.amount)
