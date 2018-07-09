@@ -23,13 +23,13 @@ export default {
     Vue.set(state.budgets[payload.id], 'budgetCategories', {})
   },
   CREATE_BUDGET_CATEGORY (state, payload) {
-    Vue.set(state.budgets[payload.budget.id].budgetCategoies, payload.budgetCategory.id, payload.budgetCategory)
+    Vue.set(state.budgets[payload.budget.id].budgetCategories, payload.budgetCategory.id, payload.budgetCategory)
   },
   UPDATE_BUDGET_CATEGORY (state, payload) {
-    state.budgets[payload.budget.id].budgetCategoies[payload.budgetCategory.id] = payload.budgetCategory
+    state.budgets[payload.budget.id].budgetCategories[payload.budgetCategory.id] = payload.budgetCategory
   },
   CREATE_CATEGORY (state, payload) {
-    Vue.set(state.categories, payload.category.id, payload.cateogry)
+    Vue.set(state.categories, payload.category.id, payload.category)
   },
   UPDATE_CATEGORY (state, payload) {
     state.categories[payload.category.id] = payload.category

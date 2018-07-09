@@ -57,44 +57,44 @@
             <th>Budgeted</th>
             <th>Spent</th>
             <th>Remaining</th>
+            <th></th>
           </tr>
         </thead>
         <tbody>
-          <template v-for="item in selectedBudget.budgetCategories">
+          <template v-for="(value, key) in selectedBudget.budgetCategories">
             <component
-              :is="budgetCategoryComponent(item.value)"
-              :key="item.key"
-              v-model="item.value"
-              v-on:update-budget-category="saveBudgetCategory"
-              v-on:edit-budget-category="activeBudgetCategory=item.value"
+              :is="budgetCategoryComponent(value)"
+              :key="key"
+              v-model="selectedBudget.budgetCategories[key]"
+              @update-budget-category="saveBudgetCategory"
+              @edit-budget-category="activeBudgetCategory=value"
             ></component>
           </template>
           <CreateUpdateBudgetCategory @add-budget-category="addBudgetCategory"></CreateUpdateBudgetCategory>
         </tbody>
-        <tfoot>
+         <tfoot>
           <tr>
-            <td></td>
+            <td>
+              Copy entire budget from:
+              <select
+                class="select"
+                @change="processDuplicateBudget($event.target.value)"
+              >
+                <option
+                  v-for="(value, key) in budgets"
+                  :value="key"
+                  :key="key"
+                >
+                  {{ value.month | moment }}
+                </option>
+              </select>
+            </td>
             <td>${{ selectedBudget.budgeted }}</td>
             <td>${{ selectedBudget.spent }}</td>
             <td>${{ selectedBudget.budgeted - selectedBudget.spent }}</td>
+            <td></td>
           </tr>
         </tfoot>
-        <tr>
-          <td>
-            Copy entire budget from:
-            <select
-              class="select"
-              @change="processDuplicateBudget($event.target.value)"
-            ></select>
-            <option
-            v-for="(value, key) in budgets"
-            :value="key"
-            :key="key">
-              {{ value.month || moment}}
-            </option>
-          </td>
-          <td>${{ selected.budgeted }}</td>
-        </tr>
       </table>
 
     </div>

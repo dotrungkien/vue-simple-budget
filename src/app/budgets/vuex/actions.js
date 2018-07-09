@@ -44,6 +44,7 @@ export const createCategory = ({ commit, state }, data) => {
   let category = Object.assign({ id: id }, data)
   commit('CREATE_CATEGORY', { category: category })
   saveCategory(category)
+  return category
 }
 
 export const updateBudgetBalance = ({ commit, getters }, data) => {
