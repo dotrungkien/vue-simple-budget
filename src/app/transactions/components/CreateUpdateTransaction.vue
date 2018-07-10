@@ -165,7 +165,7 @@ export default {
     handleCreateBusiness (business) {
       let newBusiness = { name: business }
       this.createBusiness(newBusiness).then((val) => {
-        this.updateSelection('business',  val)
+        this.updateSelection('business', val)
       })
     }
   },

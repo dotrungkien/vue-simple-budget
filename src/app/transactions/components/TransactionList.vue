@@ -45,7 +45,7 @@ import Transaction from './Transaction'
 import { sortObjects } from '../../../utils'
 
 export default {
-  name: 'transactions-list',
+  name: 'transactionsList',
 
   components: {
     Transaction,

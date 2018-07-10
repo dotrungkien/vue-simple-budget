@@ -13,7 +13,7 @@ export default {
   getBudgetCategoryById: (state, getters) => (budgetId, budgetCategoryId) => {
     return state.budgets && budgetId in state.budgets
       ? state.budgets[budgetId].budgetCategories && budgetCategoryId in state.budgets[budgetId].budgetCategories
-        ? state.buggets[budgetId].budgetCategories[budgetCategoryId]
+        ? state.budgets[budgetId].budgetCategories[budgetCategoryId]
         : false
       : false
   },

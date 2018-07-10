@@ -1,9 +1,9 @@
 import Vue from 'vue'
 
 const forceBudgetFloats = (o) => {
-  o.budgeted = parseFloat(o.budgeted)
-  o.income = parseFloat(o.income)
-  o.spent = parseFloat(o.spent)
+  o.budgeted = parseFloat(o.budgeted || 0)
+  o.income = parseFloat(o.income || 0)
+  o.spent = parseFloat(o.spent || 0)
 
   if (o.budgetCategories && Object.keys(o.budgetCategories).length > 0) {
     Object.values(o.budgetCategories).forEach((bc) => { forceBudgetCategoryFloats(bc) })
@@ -38,7 +38,6 @@ export default {
     if (!(payload['param'] === 'budgeted' || payload['param'] === 'spent') || payload['param'] === 'income') {
       throw new Error('UPDATE_BUDGET_BALANCE expects either { param: "budgeted" } or { param: "spent" } or { param: "income" }')
     }
-
     state.budgets[payload.budget.id][payload.param] += parseFloat(payload.value)
   },
 

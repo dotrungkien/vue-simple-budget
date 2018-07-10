@@ -179,7 +179,6 @@ export default {
     },
     addBudgetCategory (budgetCategory) {
       if (!budgetCategory.category) return
-
       this.createBudgetCategory({
         budget: this.selectedBudget,
         budgetCategory: {
@@ -188,7 +187,7 @@ export default {
           spent: 0
         }
       }).then(() => {
-        this.selectedBudget = this.getBudgetById(this.$route.params.budget)
+        this.selectedBudget = this.getBudgetById(this.$route.params.budgetId)
       })
     },
     saveBudgetCategory (budgetCategory) {

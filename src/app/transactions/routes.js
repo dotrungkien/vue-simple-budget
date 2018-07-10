@@ -4,6 +4,6 @@ export default [
   {
     path: '/transactions',
     name: 'transactionsList',
-    component: components.TransactionsListView
+    component: components.TransactionsList
   }
 ]
